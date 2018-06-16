@@ -75,6 +75,7 @@
         #charset koi8-r;
 
         #access_log  logs/server1_tp5_access.log  main;
+        access_log  logs/server1_tp5_access.log;
             root   "C:/MyWorkSpace/GitHub_Prj/code_studio_tp5/thinkphp5_server1/public";
         location / {
             index  index.html index.htm index.php l.php;
@@ -122,6 +123,7 @@
         #charset koi8-r;
 
         #access_log  logs/server2_tp5_access.log  main;
+        access_log  logs/server2_tp5_access.log;
             root   "C:/MyWorkSpace/GitHub_Prj/code_studio_tp5/thinkphp5_server2/public";
         location / {
             index  index.html index.htm index.php l.php;
@@ -169,6 +171,7 @@
         #charset koi8-r;
 
         #access_log  logs/server3_tp5_access.log  main;
+        access_log  logs/server3_tp5_access.log;
             root   "C:/MyWorkSpace/GitHub_Prj/code_studio_tp5/thinkphp5_workerman/public";
         location / {
             index  index.html index.htm index.php l.php;
@@ -209,6 +212,16 @@
     }
     
 ~~~
+
++ 域名配置（前台域名、后台域名）---本地配置修改host
+    * 本地开发的重定向配置（windows配置文件C:\Windows\System32\drivers\etc\HOSTS）
+    ~~~
+        127.0.0.1 server2.tp5.com
+        127.0.0.1 server1.tp5.com
+        127.0.0.1 workerman1.tp5.com
+        127.0.0.1 server3.tp5.com
+    ~~~
+
 
 ### 3、数据库配置
 
