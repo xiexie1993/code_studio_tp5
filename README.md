@@ -6,8 +6,8 @@
 
 +  为项目的系统的开发设计的依据与指导。
 +  为参与该项目的编程人员提供依据；
-+  为修改、维护提供条件；  
-+  项目负责人将按计划书的要求布置和控制开发工作全过程；  
++  为修改、维护提供条件；
++  项目负责人将按计划书的要求布置和控制开发工作全过程；
 +  项目质量保证组将按此计划书做阶段性和总结性的质量验证和确认。
 
 ### 2、 读者对象
@@ -238,6 +238,41 @@
 
 ## 四、开发记录
 
+### 1、nginx转发配置调试技巧
+
++ a、设置nginx日志格式
+
+    ~~~
+        http {
+            #...其他配置...
+            log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                              '$status $body_bytes_sent "$http_referer" '
+                              '"$http_user_agent" "$http_x_forwarded_for"';
+             #...其他配置...
+             }
+
+
+    ~~~
+
++ b、在相应的服务配置里开启
+    ~~~
+         #access_log  logs/XXXX_access.log  main;
+    ~~~
+    
++ 参考资料
+    * [文章18 ：Nginx中http请求的处理过程](https://blog.csdn.net/yankai0219/article/details/8220695)
+    * [搭建nginx反向代理用做内网域名转发](http://www.ttlsa.com/nginx/use-nginx-proxy/)
+    * [Nginx 记录请求分发日志](https://blog.csdn.net/lkx94/article/details/54575225)
+
+### 2、数据库调试技巧
+
++ 开启数据库日志输出
+  ~~~
+    set global general_log="ON";
+    show variables like "general_log%";
+    查看配置： SHOW VARIABLES LIKE "general_log%"; 
+    开启日志 ： SET GLOBAL general_log = 'ON';
+  ~~~
 
 
 

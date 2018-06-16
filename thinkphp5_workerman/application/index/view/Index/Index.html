@@ -1,84 +1,284 @@
-<script type="text/javascript">
-if (typeof console == "undefined") {    
-	this.console = { 
-		log: function (msg) {} 
-	};
-}
-var ws, name, client_list={};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style type="text/css">
+        .talk_con{
+            width:600px;
+            height:500px;
+            border:1px solid #666;
+            margin:50px auto 0;
+            background:#f9f9f9;
+        }
+        .talk_show{
+            width:580px;
+            height:420px;
+            border:1px solid #666;
+            background:#fff;
+            margin:10px auto 0;
+            overflow:auto;
+        }
+        .talk_input{
+            width:580px;
+            margin:10px auto 0;
+        }
+        .whotalk{
+            width:80px;
+            height:30px;
+            float:left;
+            outline:none;
+        }
+        .talk_word{
+            width:420px;
+            height:26px;
+            padding:0px;
+            float:left;
+            margin-left:10px;
+            outline:none;
+            text-indent:10px;
+        }        
+        .talk_sub{
+            width:56px;
+            height:30px;
+            float:left;
+            margin-left:10px;
+        }
+        .btalk{
+           margin:10px; 
+           text-align:left;
+        }
+        .btalk span{
+            display:inline-block;
+            background:#0181cc;
+            border-radius:10px;
+            color:#fff;
+            padding:5px 10px;
+        }
+        .ytalk{
+            margin:10px;
+            text-align:right;
+        }
+        .ytalk span{
+            display:inline-block;
+            background:#ef8201;
+            border-radius:10px;
+            color:#fff;
+            padding:5px 10px;
+        }
+        .gtalk{
+            margin:10px;
+            text-align:left;
+        }
+        .gtalk span{
+            display:inline-block;
+            background:#01cc1a;
+            border-radius:10px;
+            color:#fff;
+            padding:5px 10px;
+        }
+        .rtalk{
+            margin:10px;
+            text-align:left;
+        }
+        .rtalk span{
+            display:inline-block;
+            background:#f31c06;
+            border-radius:10px;
+            color:#fff;
+            padding:5px 10px;
+        }
+    </style>
+    <script type="text/javascript">      
+        // var Words = document.getElementById("words");
+        // var Who = document.getElementById("who");
+        // var TalkWords = document.getElementById("talkwords");
+        // var TalkSub = document.getElementById("talksub");
+        window.onload = function(){
+            var Words = document.getElementById("words");
+            var Who = document.getElementById("who");
+            var TalkWords = document.getElementById("talkwords");
+            var TalkSub = document.getElementById("talksub");
 
-function connect(){
-	// 创建websocket
-	ws = new WebSocket("ws://"+document.domain+":2346");
-	// 当socket连接打开时，输入用户名
-	ws.onopen = onopen;
-	// 当有消息时根据消息类型显示不同信息
-	ws.onmessage = onmessage; 
-	ws.onclose = function() {
-	  console.log("连接关闭，定时重连");
-	  connect();
-	};
-	ws.onerror = function() {
-		console.log("出现错误");
-	};
-}
-// 连接建立时发送登录信息
-function onopen()
-{
-	if(!name)
-    {
-        name = prompt('输入你的名字：', '');
-	    if(!name || name=='null'){  
-	        name = '游客';
-	    }
-    }
-    var login_data = '{"type":"login","client_name":"'+name.replace(/"/g, '\\"')+'","room_id":"房间1"}';
-    console.log(login_data);
-    ws.send(login_data);
-}
+            var username = '';
+            if (typeof console == "undefined") {    
+                this.console = { 
+                    log: function (msg) {} 
+                };
+            }
+            var ws, name, client_list={};
 
-// 服务端发来消息时
-function onmessage(e)
-{
-    var data = eval("("+e.data+")");
-    switch(data['type']){
-        // 服务端ping客户端
-        case 'ping':
-            ws.send('{"type":"pong"}');
-            break;;
-        // 登录 更新用户列表
-        case 'login':
-        	alert(data['data']);
-    }
-}
-connect();
-</script>
-<style>
-*{
- 	margin:0;
- 	padding:0;
-}
-.meta{
-	width:500px;
-	height:800px;
-	border-radius: 5%;
-	border:3px solid #000;
-	margin:10px auto;
-	position:relative;
-}
-.login_info{
-	width:100%;
-	height:40px;
-	border-bottom:3px solid #000;
-	position:absolute;
-	left:0;
-	top:0;
-	line-height:40px;
-	text-align:center;
-	display:none;
-}
-</style>
-<div class="meta">
-	<div class="login_info">
+            function connect()
+            {
+                // 创建websocket
+                ws = new WebSocket("ws://"+document.domain+":2346");
+                // 当socket连接打开时，输入用户名
+                ws.onopen = onopen;
+                // 当有消息时根据消息类型显示不同信息
+                ws.onmessage = onmessage; 
+                ws.onclose = function() {
+                  console.log("连接关闭，定时重连");
+                  connect();
+                };
+                ws.onerror = function() {
+                    console.log("出现错误");
+                };
+            }
+            // 连接建立时发送登录信息
+            function onopen()
+            {
+                if(!name)
+                {
+                    name = prompt('输入你的名字：', '');
+                    if(!name || name=='null'){  
+                        name = '游客';
+                    }
+                }
+                var login_data = '{"type":"login","client_name":"'+name.replace(/"/g, '\\"')+'","room_id":"房间1"}';
+                console.log(login_data);
+                username = name;
+                str = '<div class="ytalk"><span>'+username+'说 :' + '我已经进了房间1</span></div>' ;  
+                //# 将之前的内容与要发的内容拼接好 提交
+                Words.innerHTML = Words.innerHTML + str;
+                ws.send(login_data);
+            }
 
-	</div>
-</div>
+            // 服务端发来消息时
+            function onmessage(e)
+            {
+                var data = eval("("+e.data+")");
+                console.log(data);
+                switch(data['type']){
+                    // 服务端ping客户端
+                    case 'ping':
+                        ws.send('{"type":"pong"}');
+                        break;
+                    // 登录 更新用户列表
+                    case 'return_person':
+                        str = '<div class="gtalk"><span>服务端说(私聊) :'+data['data']+'</span></div>' ;
+                        break;
+                    case 'return_all':
+                        str = '<div class="btalk"><span>服务端说(广播) :'+data['data']+'</span></div>' ;
+                        break;
+                    case 'return_broadcast_all':
+                        str = '<div class="btalk"><span>'+data['data']+'</span></div>' ;
+                        break;
+                    default :
+                        // alert(data['data']);
+                        str = '<div class="rtalk"><span>服务端说(调试) :'+data['data']+'</span></div>' ;  
+                }
+                //# 将之前的内容与要发的内容拼接好 提交
+                Words.innerHTML = Words.innerHTML + str;
+            }
+            connect();
+
+            TalkSub.onclick = function()
+            {
+                //定义空字符串
+                var str = "";
+                if(TalkWords.value == "")
+                {
+                     // 消息为空时弹窗
+                    alert("消息不能为空");
+                    return;
+                }
+                if(Who.value == 0)
+                {
+                    //如果Who.value为0那么是 私聊
+                    str = '<div class="ytalk"><span>'+username+'说 :' + TalkWords.value +'</span></div>';
+                    var say_data = '{"type":"say","client_name":"'+username+'","room_id":"房间1","content":"'+TalkWords.value+'"}';
+                }
+                else
+                {
+                    //如果Who.value为1那么是 广播
+                    str = '<div class="ytalk"><span>'+username+'广播 : :' + TalkWords.value +'</span></div>' ;  
+                    var say_data = '{"type":"broadcast","client_name":"'+username+'","room_id":"房间1","content":"'+TalkWords.value+'"}';
+                }
+
+                ws.send(say_data);
+                //# 将之前的内容与要发的内容拼接好 提交
+                Words.innerHTML = Words.innerHTML + str;
+            }
+        }
+    </script>
+
+
+</head>
+<body>
+
+    <div class="talk_con">
+        <div class="talk_show" id="words">
+            <!-- 
+            <div class="atalk"><span id="asay">A说：吃饭了吗？</span></div>
+            <div class="btalk"><span id="bsay">B说：还没呢，你呢？</span></div>
+             -->
+        </div>
+        <div class="talk_input">
+            <select class="whotalk" id="who">
+                <option value="0">私聊：</option>
+                <option value="1">广播：</option>
+            </select>
+            <input type="text" class="talk_word" id="talkwords">
+            <input type="button" value="发送" class="talk_sub" id="talksub">
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // if (typeof console == "undefined") {    
+        //     this.console = { 
+        //         log: function (msg) {} 
+        //     };
+        // }
+        // var ws, name, client_list={};
+
+        // function connect(){
+        //     // 创建websocket
+        //     ws = new WebSocket("ws://"+document.domain+":2346");
+        //     // 当socket连接打开时，输入用户名
+        //     ws.onopen = onopen;
+        //     // 当有消息时根据消息类型显示不同信息
+        //     ws.onmessage = onmessage; 
+        //     ws.onclose = function() {
+        //       console.log("连接关闭，定时重连");
+        //       connect();
+        //     };
+        //     ws.onerror = function() {
+        //         console.log("出现错误");
+        //     };
+        // }
+        // // 连接建立时发送登录信息
+        // function onopen()
+        // {
+        //     if(!name)
+        //     {
+        //         name = prompt('输入你的名字：', '');
+        //         if(!name || name=='null'){  
+        //             name = '游客';
+        //         }
+        //     }
+        //     var login_data = '{"type":"login","client_name":"'+name.replace(/"/g, '\\"')+'","room_id":"房间1"}';
+        //     console.log(login_data);
+        //     ws.send(login_data);
+        // }
+
+        // // 服务端发来消息时
+        // function onmessage(e)
+        // {
+        //     var data = eval("("+e.data+")");
+        //     switch(data['type']){
+        //         // 服务端ping客户端
+        //         case 'ping':
+        //             ws.send('{"type":"pong"}');
+        //             break;;
+        //         // 登录 更新用户列表
+        //         case 'login':
+        //             alert(data['data']);
+        //     }
+        // }
+        // connect();
+    </script>
+</body>
+
+</html>

@@ -16,9 +16,11 @@ class Worker extends Server
     public function onMessage($connection, $data)
     {
         // 客户端传递的是json数据
+        // $connection->send("{'type':'debug_return_person','data':'".$data."'}");
         $message_data = json_decode($data, true);
         if(!$message_data)
         {
+            $connection->send("{'type':'error','data':'message_data is null'}");
             return ;
         }
         // 根据类型执行不同的业务
@@ -26,16 +28,18 @@ class Worker extends Server
         {
             // 客户端回应服务端的心跳
             case 'pong':
-
+                $connection->send("{'type':'ping','data':'retutn pong'}");
                 return ;        
             
             // 客户端登录 message格式: {type:login, name:xx, room_id:1} ，添加到客户端，广播给所有客户端xx进入聊天室
             case 'login':
+                // $connection->send("{'type':'debug_return_person','data':'debug login'}");
             	if(!isset($message_data['room_id']))
                 {
                     throw new \Exception("\$message_data['room_id'] not set. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
                 }
                 // 判断当前客户端是否已经验证,即是否设置了uid
+                
                 if(!isset($connection->uid))
 			    {
 			       // 没验证的话把第一个包当做uid（这里为了方便演示，没做真正的验证）
@@ -46,13 +50,39 @@ class Worker extends Server
 			    	$worker = $this->worker;
 			    	foreach($worker->connections as $conn)
 				    {
-				        $conn->send("{'type':'login','data':'".$message_data['client_name']."登陆成功'}");
+				        $conn->send("{'type':'return_all','data':'".$message_data['client_name']."登陆成功'}");
 				    }
 			    }
-
+                return;
+            // 私聊
             case 'say':
-               
-               	return;
+                // $connection->send("{'type':'debug_return_person','data':'default type say'}");
+                if($message_data['content']== '吃饭了吗？')
+                {
+                        $ret_data = '还没呢，你呢？';
+                }
+                elseif ($message_data['content']== '那又怎样！') 
+                {
+                    $ret_data = '没怎样！';
+                }
+                else
+                {
+                    $ret_data = '那又怎样！';
+                }
+                $connection->send("{'type':'return_person','data':'".$ret_data."'}");
+                return;
+            // 广播
+            case 'broadcast':
+                // $connection->send("{'type':'debug_return_person','data':'default type broadcast'}");
+                $worker = $this->worker;
+                foreach($worker->connections as $conn)
+                {
+                    $conn->send("{'type':'return_broadcast_all','data':'".$message_data['client_name']."（广播）：".$message_data['content']."'}");
+                }
+                return;
+            default:
+                $connection->send("{'type':'return_person','data':'default type'}");
+                return;
         }
     }
 
@@ -62,11 +92,12 @@ class Worker extends Server
      */
     public function onConnect($connection)
     {
-        $worker = $this->worker;
-        foreach($worker->connections as $conn)
-        {
-            $conn->send("{'type':'login','data':'欢迎光临!'}");
-        }
+        // $worker = $this->worker;
+        // foreach($worker->connections as $conn)
+        // {
+        //     $conn->send("{'type':'login','data':'欢迎光临!'}");
+        // }
+        $connection->send("{'type':'return_person','data':'欢迎光临!'}");
     }
     /**
 	 * 向所有验证的用户发送消息
